@@ -33,6 +33,7 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.Charsets;
 import org.eclipse.kura.core.linux.executor.privileged.PrivilegedExecutorServiceImpl;
 import org.eclipse.kura.core.linux.executor.unprivileged.UnprivilegedExecutorServiceImpl;
+import org.eclipse.kura.core.testutil.AssumingIsNotJenkins;
 import org.eclipse.kura.core.testutil.AssumingIsNotMac;
 import org.eclipse.kura.executor.Command;
 import org.eclipse.kura.executor.CommandExecutorService;
@@ -52,23 +53,21 @@ public class ExecutorServiceImplTest {
     private static final String TMP = "/tmp";
     private static CommandExecutorService service;
 
-    public ExecutorServiceImplTest(CommandExecutorService service) {
-        ExecutorServiceImplTest.service = service;
-    }
+    @ClassRule
+    public static final AssumingIsNotMac assumingIsNotMac = new AssumingIsNotMac();
 
     @ClassRule
-    public static AssumingIsNotMac assumingIsNotMac = new AssumingIsNotMac();
+    public static final AssumingIsNotJenkins assumingIsNotJenkins = new AssumingIsNotJenkins();
 
     @Parameterized.Parameters
     public static Collection<CommandExecutorService> getServices() {
-        return Arrays.asList(new CommandExecutorService[] { new UnprivilegedExecutorServiceImpl(),
-                new PrivilegedExecutorServiceImpl() });
+        return Arrays.asList(new UnprivilegedExecutorServiceImpl(), new PrivilegedExecutorServiceImpl());
     }
 
     @BeforeClass
     public static void setup() {
         System.out.println("Check if kura user exists...");
-        CommandLine commandLine = new CommandLine("id");
+        CommandLine commandLine = new CommandLine("/bin/id");
         commandLine.addArgument("-u");
         commandLine.addArgument("kura");
         DefaultExecutor executor = new DefaultExecutor();
@@ -94,7 +93,7 @@ public class ExecutorServiceImplTest {
         } else {
             System.out.println("kura user doesn't exists: let's try to create it...");
             exitStatus = 1;
-            commandLine = new CommandLine("useradd");
+            commandLine = new CommandLine("/sbin/useradd");
             commandLine.addArgument("kura");
             try {
                 exitStatus = executor.execute(commandLine);
@@ -112,7 +111,7 @@ public class ExecutorServiceImplTest {
     @AfterClass
     public static void clean() {
         System.out.println("Delete kura user...");
-        CommandLine commandLine = new CommandLine("userdel");
+        CommandLine commandLine = new CommandLine("/sbin/userdel");
         commandLine.addArgument("kura");
         DefaultExecutor executor = new DefaultExecutor();
         ExecuteWatchdog watchdog = new ExecuteWatchdog(60000L);
