@@ -365,11 +365,16 @@ public class ServicesUi extends AbstractServicesUi {
                                                         ServicesUi.this.reset.setEnabled(false);
                                                         setDirty(false);
                                                         ServicesUi.this.originalConfig = ServicesUi.this.configurableComponent;
-                                                        context.defer(2000, () -> ServicesUi.this.listener
-                                                                .ifPresent(Listener::onConfigurationChanged));
+                                                        /*
+                                                         * HACK - Force a rendering of the selected tab after
+                                                         * apply()
+                                                         */
+                                                        context.defer(2000, () -> ServicesUi.this.listener.ifPresent(
+                                                                l -> ((EntryClassUi) l).fetchAvailableServices(true)));
                                                         onApply.ifPresent(action -> action.accept(Optional.empty()));
                                                     }
                                                 })))));
+
                             }
                         }, messages.toArray(new String[messages.size()]));
             }
