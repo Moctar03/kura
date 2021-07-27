@@ -12,10 +12,12 @@
  *******************************************************************************/
 package org.eclipse.kura.net.admin;
 
+import static org.eclipse.kura.configuration.ConfigurationService.KURA_SERVICE_PID;
+import static org.osgi.framework.Constants.SERVICE_PID;
+
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,19 +50,13 @@ import org.eclipse.kura.net.firewall.FirewallOpenPortConfigIP;
 import org.eclipse.kura.net.firewall.FirewallOpenPortConfigIP4;
 import org.eclipse.kura.net.firewall.FirewallPortForwardConfigIP;
 import org.eclipse.kura.net.firewall.FirewallPortForwardConfigIP4;
-import org.eclipse.kura.security.FloodingProtectionConfigurationChangeEvent;
-import org.eclipse.kura.security.FloodingProtectionConfigurationService;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.ComponentContext;
-import org.osgi.service.event.Event;
 import org.osgi.service.event.EventAdmin;
-import org.osgi.service.event.EventConstants;
-import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FirewallConfigurationServiceImpl
-        implements FirewallConfigurationService, SelfConfiguringComponent, EventHandler {
+public class FirewallConfigurationServiceImpl implements FirewallConfigurationService, SelfConfiguringComponent {
 
     private static final Logger logger = LoggerFactory.getLogger(FirewallConfigurationServiceImpl.class);
 
@@ -68,7 +64,6 @@ public class FirewallConfigurationServiceImpl
     private ServiceRegistration<?> serviceRegistration;
     private LinuxFirewall firewall;
     private CommandExecutorService executorService;
-    private FloodingProtectionConfigurationService floodingConfiguration;
 
     public void setEventAdmin(EventAdmin eventAdmin) {
         this.eventAdmin = eventAdmin;
@@ -90,38 +85,11 @@ public class FirewallConfigurationServiceImpl
         }
     }
 
-    public void setFloodingProtectionConfigurationService(
-            FloodingProtectionConfigurationService floodingConfiguration) {
-        this.floodingConfiguration = floodingConfiguration;
-    }
-
-    public void unsetFloodingProtectionConfigurationService(
-            FloodingProtectionConfigurationService floodingConfiguration) {
-        if (this.floodingConfiguration == floodingConfiguration) {
-            this.floodingConfiguration = null;
-        }
-    }
-
     protected void activate(ComponentContext componentContext, Map<String, Object> properties) {
         logger.debug("activate()");
 
-        // we are intentionally ignoring the properties from ConfigAdmin at startup
-        if (properties == null) {
-            logger.debug("activate() :: Got null properties...");
-        } else {
-            for (Entry<String, Object> entry : properties.entrySet()) {
-                logger.debug("activate() :: Props... {}={}", entry.getKey(), entry.getValue());
-            }
-        }
-
         this.firewall = getLinuxFirewall();
-        setFloodingProtectionConfiguration();
-
-        Dictionary<String, Object> props = new Hashtable<>();
-        String[] eventTopics = { FloodingProtectionConfigurationChangeEvent.FP_EVENT_CONFIG_CHANGE_TOPIC };
-        props.put(EventConstants.EVENT_TOPIC, eventTopics);
-        this.serviceRegistration = componentContext.getBundleContext().registerService(EventHandler.class.getName(),
-                this, props);
+        updated(properties);
     }
 
     protected void deactivate(ComponentContext componentContext) {
@@ -151,8 +119,6 @@ public class FirewallConfigurationServiceImpl
         } catch (KuraException e) {
             logger.error("Failed to set Firewall NAT Configuration", e);
         }
-
-        setFloodingProtectionConfiguration();
 
         // raise the event because there was a change
         this.eventAdmin.postEvent(new FirewallConfigurationChangeEvent(properties));
@@ -224,9 +190,11 @@ public class FirewallConfigurationServiceImpl
     public ComponentConfiguration getConfiguration() throws KuraException {
         logger.debug("getConfiguration()");
         try {
-            FirewallConfiguration firewallConfiguration = getFirewallConfiguration();
-            return new ComponentConfigurationImpl(PID, getDefinition(),
-                    firewallConfiguration.getConfigurationProperties());
+            Map<String, Object> firewallConfigurationProperties = getFirewallConfiguration()
+                    .getConfigurationProperties();
+            firewallConfigurationProperties.put(KURA_SERVICE_PID, PID);
+            firewallConfigurationProperties.put(SERVICE_PID, PID);
+            return new ComponentConfigurationImpl(PID, getDefinition(), firewallConfigurationProperties);
         } catch (Exception e) {
             throw new KuraException(KuraErrorCode.INTERNAL_ERROR, e);
         }
@@ -335,14 +303,6 @@ public class FirewallConfigurationServiceImpl
         addNatRules(natRules);
     }
 
-    @Override
-    public void handleEvent(Event event) {
-        logger.debug("Received event: {}", event.getTopic());
-        if (event.getTopic().equals(FloodingProtectionConfigurationChangeEvent.FP_EVENT_CONFIG_CHANGE_TOPIC)) {
-            setFloodingProtectionConfiguration();
-        }
-    }
-
     protected void addLocalRules(ArrayList<LocalRule> localRules) throws KuraException {
         this.firewall.addLocalRules(localRules);
     }
@@ -437,15 +397,12 @@ public class FirewallConfigurationServiceImpl
         return new NetworkPair(IPAddress.parseHostAddress("0.0.0.0"), (short) 0);
     }
 
-    private void setFloodingProtectionConfiguration() {
-        if (this.floodingConfiguration != null) {
-            try {
-                this.firewall.setAdditionalRules(this.floodingConfiguration.getFloodingProtectionFilterRules(),
-                        this.floodingConfiguration.getFloodingProtectionNatRules(),
-                        this.floodingConfiguration.getFloodingProtectionMangleRules());
-            } catch (KuraException e) {
-                logger.error("Failed to set Firewall Flooding Protection Configuration", e);
-            }
+    @Override
+    public void addFloodingProtectionRules(Set<String> floodingRules) {
+        try {
+            this.firewall.setAdditionalRules(new HashSet<>(), new HashSet<>(), floodingRules);
+        } catch (KuraException e) {
+            logger.error("Failed to set Firewall Flooding Protection Configuration", e);
         }
     }
 }

@@ -45,6 +45,7 @@ public class TamperDetectionServiceImpl implements TamperDetectionService, Confi
 
     private boolean isDeviceTampered = false;
     private Optional<Date> tamperInstant = Optional.empty();
+    private String ownPid;
 
     public void setConfigurationService(final ConfigurationService configurationService) {
         this.configurationService = configurationService;
@@ -56,19 +57,21 @@ public class TamperDetectionServiceImpl implements TamperDetectionService, Confi
 
     public void activate(final Map<String, Object> properties) {
         logger.info("activating...");
+        ownPid = extractPid(properties);
         setDeviceTampered(TAMPERED.get(properties));
         logger.info("activating...done");
     }
 
     public void update(final Map<String, Object> properties) {
         logger.info("updating...");
+        ownPid = extractPid(properties);
         setDeviceTampered(TAMPERED.get(properties));
         logger.info("updating...done");
     }
 
     @Override
     public String getDisplayName() {
-        return "Simulated tamper detection";
+        return "Simulated tamper detection " + ownPid;
     }
 
     @Override
@@ -85,12 +88,19 @@ public class TamperDetectionServiceImpl implements TamperDetectionService, Confi
 
     @Override
     public void resetTamperStatus() throws KuraException {
-        configurationService.updateConfiguration(TamperDetectionServiceImpl.class.getName(),
-                Collections.singletonMap(TAMPERED_KEY, false));
+        configurationService.updateConfiguration(ownPid, Collections.singletonMap(TAMPERED_KEY, false));
+    }
+
+    private String extractPid(final Map<String, Object> properties) {
+        try {
+            return (String) properties.get(ConfigurationService.KURA_SERVICE_PID);
+        } catch (final Exception e) {
+            return TamperDetectionServiceImpl.class.getName();
+        }
     }
 
     private void postTamperEvent() {
-        final TamperEvent tamperEvent = new TamperEvent(getTamperStatus());
+        final TamperEvent tamperEvent = new TamperEvent(ownPid, getTamperStatus());
 
         this.eventAdmin.postEvent(tamperEvent);
     }

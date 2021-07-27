@@ -24,11 +24,13 @@ import static org.mockito.Mockito.when;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.eclipse.kura.KuraErrorCode;
 import org.eclipse.kura.KuraException;
@@ -42,6 +44,7 @@ import org.eclipse.kura.net.IP4Address;
 import org.eclipse.kura.net.IPAddress;
 import org.eclipse.kura.net.NetProtocol;
 import org.eclipse.kura.net.NetworkPair;
+import org.eclipse.kura.net.admin.event.FirewallConfigurationChangeEvent;
 import org.eclipse.kura.net.firewall.FirewallAutoNatConfig;
 import org.eclipse.kura.net.firewall.FirewallNatConfig;
 import org.eclipse.kura.net.firewall.FirewallOpenPortConfigIP;
@@ -55,47 +58,67 @@ import org.osgi.service.event.EventAdmin;
 
 public class FirewallConfigurationServiceImplTest {
 
-    @Test
-    public void testActivateNullProps() {
-        // only test logging
-
+    @Test(expected = NullPointerException.class)
+    public void testActivateEmptyProps() throws KuraException {
+        LinuxFirewall lfMock = mock(LinuxFirewall.class);
+        EventAdmin eaMock = mock(EventAdmin.class);
         FirewallConfigurationServiceImpl svc = new FirewallConfigurationServiceImpl() {
 
             @Override
             protected LinuxFirewall getLinuxFirewall() {
-                return null;
+                return lfMock;
             }
         };
+        svc.setEventAdmin(eaMock);
 
         ComponentContext componentContext = mock(ComponentContext.class);
         BundleContext bundleContext = mock(BundleContext.class);
         when(componentContext.getBundleContext()).thenReturn(bundleContext);
 
         Map<String, Object> properties = null;
-
         svc.activate(componentContext, properties);
     }
 
     @Test
-    public void testActivate() {
-        // only test logging
-
+    public void testActivate() throws KuraException, NumberFormatException, UnknownHostException {
+        LinuxFirewall lfMock = mock(LinuxFirewall.class);
+        EventAdmin eaMock = mock(EventAdmin.class);
         FirewallConfigurationServiceImpl svc = new FirewallConfigurationServiceImpl() {
 
             @Override
             protected LinuxFirewall getLinuxFirewall() {
-                return null;
+                return lfMock;
             }
         };
+        svc.setEventAdmin(eaMock);
 
         ComponentContext componentContext = mock(ComponentContext.class);
         BundleContext bundleContext = mock(BundleContext.class);
         when(componentContext.getBundleContext()).thenReturn(bundleContext);
 
         Map<String, Object> properties = new HashMap<>();
-        properties.put("key", "value");
+        properties.put("firewall.open.ports", "22,tcp,1.2.3.4/32,eth1,,,,#");
+        properties.put("firewall.nat", "eth0,eth1,tcp,0.0.0.0/0,0.0.0.0/0,true,#");
+        properties.put("firewall.port.forwarding", "eth0,eth1,1.2.3.4,tcp,4050,3040,true,0.0.0.0/0,,,#");
+        List<LocalRule> localRules = new ArrayList<>();
+        localRules.add(new LocalRule(22, "tcp",
+                new NetworkPair<>((IP4Address) IPAddress.parseHostAddress("1.2.3.4"), Short.parseShort("32")), "eth1",
+                null, null, null));
+        List<PortForwardRule> portForwardRules = new ArrayList<>();
+        portForwardRules.add(new PortForwardRule().inboundIface("eth0").outboundIface("eth1").address("1.2.3.4")
+                .protocol("tcp").inPort(4050).outPort(3040).masquerade(true).permittedNetwork("0.0.0.0")
+                .permittedNetworkMask(0));
+        List<NATRule> natRules = new ArrayList<>();
+        natRules.add(new NATRule("eth0", "eth1", "tcp", "0.0.0.0/0", "0.0.0.0/0", true, RuleType.IP_FORWARDING));
 
         svc.activate(componentContext, properties);
+
+        verify(lfMock).deleteAllLocalRules();
+        verify(lfMock).addLocalRules(localRules);
+        verify(lfMock).deleteAllPortForwardRules();
+        verify(lfMock).addPortForwardRules(portForwardRules);
+        verify(lfMock).deleteAllNatRules();
+        verify(lfMock).addNatRules(natRules);
     }
 
     @Test
@@ -162,7 +185,7 @@ public class FirewallConfigurationServiceImplTest {
         Map<String, Object> properties = configuration.getConfigurationProperties();
 
         assertNotNull(properties);
-        assertEquals(3, properties.size());
+        assertEquals(5, properties.size());
 
         assertTrue(properties.containsKey("firewall.open.ports"));
         String ports = (String) properties.get("firewall.open.ports");
@@ -487,6 +510,55 @@ public class FirewallConfigurationServiceImplTest {
 
         svc.setFirewallOpenPortConfiguration(firewallConfiguration);
 
+    }
+    
+    @Test
+    public void addFloodingProtectionRulesTest() {
+        final LinuxFirewall mockFirewall = mock(LinuxFirewall.class);
+        
+        FirewallConfigurationServiceImpl svc = new FirewallConfigurationServiceImpl() {
+            
+            @Override
+            protected LinuxFirewall getLinuxFirewall() {
+                return mockFirewall;
+            }
+            
+            @Override
+            public synchronized void updated(Map<String, Object> properties) {
+                // don't care about the properties in this test
+                // update is not called when adding flooding protection rules,
+                // it is called just during activate
+            }
+        };
+        
+        ComponentContext mockContext = mock(ComponentContext.class);
+        svc.activate(mockContext, new HashMap<String, Object>());
+        
+        String[] floodingRules = {
+                "-A prerouting-kura -m conntrack --ctstate INVALID -j DROP",
+                "-A prerouting-kura -p tcp ! --syn -m conntrack --ctstate NEW -j DROP",
+                "-A prerouting-kura -p tcp -m conntrack --ctstate NEW -m tcpmss ! --mss 536:65535 -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags SYN,RST SYN,RST -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags FIN,RST FIN,RST -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags FIN,ACK FIN -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags ACK,URG URG -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags ACK,FIN FIN -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags ACK,PSH PSH -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags ALL ALL -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags ALL NONE -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP",
+                "-A prerouting-kura -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP",
+                "-A prerouting-kura -p icmp -j DROP", "-A prerouting-kura -f -j DROP" };
+        
+        svc.addFloodingProtectionRules(new HashSet<>(Arrays.asList(floodingRules)));
+        
+        try {
+            verify(mockFirewall, times(1)).setAdditionalRules(anyObject(), anyObject(), anyObject());
+        } catch(KuraException e) {
+            assert(false);
+        }
     }
 
 }

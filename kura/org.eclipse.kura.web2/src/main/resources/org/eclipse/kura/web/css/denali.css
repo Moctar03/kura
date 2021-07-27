@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2011, 2020 Eurotech and/or its affiliates and others
+ * Copyright (c) 2011, 2021 Eurotech and/or its affiliates and others
  *
  *  This program and the accompanying materials are made
  *  available under the terms of the Eclipse Public License 2.0
@@ -439,8 +439,16 @@ Sidenav START
 		left: 16.66666667% !important;
 	}
 	
-	.footer {
-		left: 16.66666667% !important;
+	.no-sidenav .sidenav {
+		display: none;
+	}
+	
+	.main-container:not(.no-sidenav) .no-sidenav-logo {
+		display: none;
+	}
+	
+	.main-container:not(.no-sidenav) .panel-footer {
+		margin-left: 16.66666667%;
 	}
 	
 	.sidenav-overlay {
@@ -448,7 +456,7 @@ Sidenav START
 	}
 }
 
-@media screen and (max-width: 992px) {
+@media screen and (max-width: 991px) {
 	
 	.main-container {
 		padding-top: 1.5cm;
@@ -479,6 +487,14 @@ Sidenav START
 	
 	.logout-ui:not(.header-logout-ui) {
 		display: none;
+	}
+	
+	.no-sidenav-logo {
+		display: none;
+	}
+	
+	.panel-footer {
+		margin-left: 0;
 	}
 }
 
@@ -598,6 +614,9 @@ Navbar START
 
 .nav-tabs {
 	border-bottom: solid 1px;
+	overflow-x: auto !important;
+	overflow-y: hidden !important;
+	white-space: nowrap !important;
 }
 
 .nav-tabs  a {
@@ -606,12 +625,16 @@ Navbar START
 }
 
 .nav-tabs li {
+	float: none !important;
 	border: none;
 	background-color: inherit;
+	display: inline-block !important;
 }
 
 .nav-tabs li.active {
+	float: none !important;
 	border-bottom: solid 0.1cm #2860A6;
+	display: inline-block !important;
 }
 
 /**********************
@@ -761,22 +784,6 @@ Help panel START
 
 /**********************
 Help panel END
-***********************/
-
-/**********************
-Modem Help Fix START
-***********************/
-
-#modem-help {
-	max-width: 20%;
-}
-
-#modem-help * {
-	max-width 100%;
-}
-
-/**********************
-Modem Help Fix END
 ***********************/
 
 /** Most GWT widgets already have a style name defined */

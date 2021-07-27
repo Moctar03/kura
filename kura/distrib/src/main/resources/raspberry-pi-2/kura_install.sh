@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  Copyright (c) 2011, 2020 Eurotech and/or its affiliates and others
+#  Copyright (c) 2011, 2021 Eurotech and/or its affiliates and others
 #
 #  This program and the accompanying materials are made
 #  available under the terms of the Eclipse Public License 2.0
@@ -38,7 +38,7 @@ fi
 #set up users and grant permissions to them
 cp ${INSTALL_DIR}/kura/install/manage_kura_users.sh ${INSTALL_DIR}/kura/.data/manage_kura_users.sh
 chmod 700 ${INSTALL_DIR}/kura/.data/manage_kura_users.sh
-${INSTALL_DIR}/kura/.data/manage_kura_users.sh -i 
+${INSTALL_DIR}/kura/.data/manage_kura_users.sh -i
 
 #set up default networking file
 cp ${INSTALL_DIR}/kura/install/network.interfaces /etc/network/interfaces
@@ -98,6 +98,13 @@ fi
 #set up logrotate - no need to restart as it is a cronjob
 cp ${INSTALL_DIR}/kura/install/logrotate.conf /etc/logrotate.conf
 cp ${INSTALL_DIR}/kura/install/kura.logrotate /etc/logrotate.d/kura
+
+#assigning possible .conf files ownership to kurad
+PATTERN="/etc/dhcpd*.conf* /etc/resolv.conf* /etc/wpa_supplicant*.conf* /etc/hostapd*.conf*"
+for FILE in $(ls $PATTERN 2>/dev/null)
+do
+  chown kurad:kurad $FILE
+done
 
 # execute patch_sysctl.sh from installer install folder
 chmod 700 ${INSTALL_DIR}/kura/install/patch_sysctl.sh

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2020 Eurotech and/or its affiliates and others
- * 
+ * Copyright (c) 2011, 2021 Eurotech and/or its affiliates and others
+ *
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
- * 
+ *
  * Contributors:
  *  Eurotech
  *  Red Hat Inc
@@ -76,6 +76,7 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.ComponentException;
 import org.osgi.service.component.runtime.ServiceComponentRuntime;
 import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
+import org.osgi.service.event.EventAdmin;
 import org.osgi.service.metatype.AttributeDefinition;
 import org.osgi.service.metatype.MetaTypeService;
 import org.osgi.service.metatype.ObjectClassDefinition;
@@ -103,6 +104,7 @@ public class ConfigurationServiceImpl implements ConfigurationService, OCDServic
     private ServiceComponentRuntime scrService;
     private Marshaller xmlMarshaller;
     private Unmarshaller xmlUnmarshaller;
+    protected EventAdmin eventAdmin;
 
     // contains all the PIDs (aka kura.service.pid) - both of configurable and self configuring components
     private final Set<String> allActivatedPids;
@@ -185,6 +187,16 @@ public class ConfigurationServiceImpl implements ConfigurationService, OCDServic
 
     public void unsetXmlUnmarshaller(final Unmarshaller unmarshaller) {
         this.xmlUnmarshaller = null;
+    }
+
+    public void setEventAdmin(EventAdmin eventAdmin) {
+        this.eventAdmin = eventAdmin;
+    }
+
+    public void unsetEventAdmin(EventAdmin eventAdmin) {
+        if (this.eventAdmin == eventAdmin) {
+            this.eventAdmin = null;
+        }
     }
 
     public ConfigurationServiceImpl() {
@@ -1035,9 +1047,17 @@ public class ConfigurationServiceImpl implements ConfigurationService, OCDServic
     }
 
     private synchronized long saveSnapshot(List<ComponentConfiguration> configs) throws KuraException {
+
+        List<ComponentConfiguration> configsToSave = configs;
+
+        // Remove definition from configurations
+        configsToSave = configs.stream()
+                .map(cc -> new ComponentConfigurationImpl(cc.getPid(), null, cc.getConfigurationProperties()))
+                .collect(Collectors.toList());
+
         // Build the XML structure
         XmlComponentConfigurations conf = new XmlComponentConfigurations();
-        conf.setConfigurations(configs);
+        conf.setConfigurations(configsToSave);
 
         // Write it to disk: marshall
         long sid = new Date().getTime();

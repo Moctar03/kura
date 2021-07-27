@@ -2,7 +2,7 @@
 
 <!-- 
 	
-	Copyright (c) 2011, 2020 Eurotech and/or its affiliates and others
+	Copyright (c) 2011, 2021 Eurotech and/or its affiliates and others
   
     This program and the accompanying materials are made
     available under the terms of the Eclipse Public License 2.0
@@ -76,6 +76,7 @@
 		padding-left: 6px;
 		padding-right: 6px;
 		font-weight: bold;
+		white-space: pre-wrap;
 		}
 		
 		.user-icon {
@@ -140,7 +141,10 @@
 					</b:Column>
 				</b:Row>
 			</b:Row>
-			<b:Row addStyleNames='main-container'>
+			<b:Row ui:field="mainContainer" addStyleNames='main-container'>
+				<b:Column size="MD_2" addStyleNames="no-sidenav-logo">
+					<b:Panel addStyleNames="{style.image} headerLogo" />
+				</b:Column>
 				<!-- ROW#2 content -->
 				<b:Column ui:field="sidenav" size="MD_2"
 					addStyleNames="center-panel z-depth-1 sidenav sidenav-hidden">
@@ -254,43 +258,17 @@
 													</b:Heading>
 												</b:Alert>
 											</b:Panel>
-											<b:Panel ui:field="stackTraceContainer">
-												<b:PanelHeader>
-													<b:Heading size="H6">
-														<b:Anchor dataToggle="COLLAPSE"
-															dataParent="#accordion"
-															dataTarget="#collapseErrorStackTrace"
-															ui:field="errorStackTraceAreaOneAnchor" />
-													</b:Heading>
-												</b:PanelHeader>
-												<b:PanelCollapse
-													b:id="collapseErrorStackTrace"
-													ui:field="errorStackTraceAreaOneCollapse">
-													<b:PanelBody>
-														<b:Well>
-															<b:Container fluid="true"
-																addStyleNames="failure-handler-stack-trace-container">
-																<g:VerticalPanel
-																	ui:field="errorStackTraceAreaOne">
-																</g:VerticalPanel>
-															</b:Container>
-														</b:Well>
-													</b:PanelBody>
-												</b:PanelCollapse>
-											</b:Panel>
 										</b:PanelGroup>
 									</g:ScrollPanel>
 								</b:ModalBody>
 							</b:Modal>
+							<kura.ui:DropdownNotification ui:field="dropdownNotification" />
 							<b:Row addStyleNames='content-wrapper'>
 								<b:Column size="MD_10">
 									<b:Panel ui:field="contentPanel"
 										addStyleNames="content-panel">
 										<b:PanelHeader ui:field="contentPanelHeader"
 											addStyleNames="{style.content-panel-header}" />
-										<b:Row>
-											<g:Label ui:field="serviceDescription" />
-										</b:Row>
 										<b:PanelBody ui:field="contentPanelBody"
 											addStyleNames="{style.content-panel-body}">
 										</b:PanelBody>
@@ -307,7 +285,7 @@
 						size="MD_12">
 						<b:Row>
 							<b:Panel>
-								<b:PanelFooter>
+								<b:PanelFooter addStyleNames="panel-footer">
 									<b:Row>
 										<b:Column size="MD_6,XS_6">
 											<b.html:Paragraph alignment="LEFT">
