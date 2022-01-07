@@ -545,6 +545,14 @@ public class GwtNetworkServiceImpl extends OsgiRemoteServiceServlet implements G
                                             } catch (KuraException e) {
                                                 logger.warn("Failed to get Received Signal Strength from modem", e);
                                             }
+                                            
+                                            try {
+                                                String iccid = cellModemService.getIntegratedCirquitCardId();
+                                                logger.debug("Setting ICCID to {}", iccid);
+                                                gwtModemConfig.setHwICCID(iccid);
+                                            } catch (KuraException e) {
+                                                logger.warn("Failed to get ICCID from modem", e);
+                                            }
 
                                             try {
                                                 String sModel = cellModemService.getModel();

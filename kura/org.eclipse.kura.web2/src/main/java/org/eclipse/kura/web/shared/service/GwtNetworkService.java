@@ -81,8 +81,11 @@ public interface GwtNetworkService extends RemoteService {
 
     public List<GwtModemPdpEntry> findPdpContextInfo(GwtXSRFToken xsrfToken, String interfaceName)
             throws GwtKuraException;
+<<<<<<< HEAD
 
     public boolean isIEEE80211ACSupported(GwtXSRFToken xsrfToken, String ifaceName) throws GwtKuraException;
+=======
+>>>>>>> 902fb2058 (Dhcp Lease List Added)
     
     @Audit(componentName = "UI Network", description = "Get Dhcp List")
     public List<String> getDhcpLeases(GwtXSRFToken xsrfToken) throws GwtKuraException;

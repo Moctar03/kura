@@ -46,11 +46,24 @@ public class IwCapabilityTool {
     private static final Pattern CHIPHER_CAPABILITY_PATTERN = Pattern.compile("^\\s+\\* ([\\w-\\d]+).+$");
     private static final Pattern RSN_CAPABILITY_PATTERN = Pattern.compile("^\\s*Device supports RSN.*$");
     private static final Pattern COUNTRY_PATTERN = Pattern.compile("country (..): .*");
+<<<<<<< HEAD
     private static final Pattern FREQUENCY_CHANNEL_PATTERN = Pattern
             .compile("^\\* ([0-9]+) MHz \\[([0-9]+)\\](?: \\((\\d{0,3}\\.\\d{0,2}) dBm\\)){0,1}[\\(\\w\\\\\\s,)]*$");
     private static final Pattern VHT_PATTERN = Pattern.compile("^\\s*VHT Capabilities.*$");
     private static final Pattern DFS_PATTERN = Pattern.compile("^.+DFS_OFFLOAD.+$");
 
+=======
+    private static final Pattern FREQUENCY_CHANNEL_PATTERN = Pattern.compile(".*\\* ([0-9]+) MHz \\[([0-9]*)\\] \\((.*) dBm\\)$");
+    
+    private enum ParseState {
+        HAS_RSN,
+        HAS_CHIPHERS,
+        PARSE_CHIPHERS
+    }
+
+    private static final EnumSet<ParseState> DONE = EnumSet.of(ParseState.HAS_RSN, ParseState.HAS_CHIPHERS);
+    
+>>>>>>> 902fb2058 (Dhcp Lease List Added)
     protected IwCapabilityTool() {
 
     }
