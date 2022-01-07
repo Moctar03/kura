@@ -112,7 +112,7 @@ public class IwCapabilityToolTest {
                 + "                        * 5805 MHz [161] (20.0 dBm)\n"
                 + "                        * 5825 MHz [165] (20.0 dBm)\n";
     }
-
+    
     @Test
     public void parsePhy() throws KuraException, java.io.IOException {
         String commandOutput = getPhyInfo();
@@ -179,4 +179,5 @@ public class IwCapabilityToolTest {
         assertTrue(output.indexOf("countryCode: FR") >= 0);
         assertTrue(output.indexOf("channelFrequencies:") >= 0);
     }
+    
 }
