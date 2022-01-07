@@ -48,7 +48,7 @@ public class IwCapabilityTool {
     private static final Pattern RSN_CAPABILITY_PATTERN = Pattern.compile("^\tDevice supports RSN.*$");
     private static final Pattern COUNTRY_PATTERN = Pattern.compile("country (..): .*");
     private static final Pattern FREQUENCY_CHANNEL_PATTERN = Pattern.compile(".*\\* ([0-9]+) MHz \\[([0-9]*)\\] \\((.*) dBm\\)$");
-
+    
     private enum ParseState {
         HAS_RSN,
         HAS_CHIPHERS,

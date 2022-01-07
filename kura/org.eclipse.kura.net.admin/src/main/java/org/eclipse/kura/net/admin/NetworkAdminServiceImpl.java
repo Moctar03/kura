@@ -61,6 +61,8 @@ import org.eclipse.kura.net.admin.monitor.InterfaceStateBuilder;
 import org.eclipse.kura.net.admin.monitor.WifiInterfaceState;
 import org.eclipse.kura.net.admin.visitor.linux.WpaSupplicantConfigWriter;
 import org.eclipse.kura.net.admin.visitor.linux.util.KuranetConfig;
+import org.eclipse.kura.linux.net.util.DhcpLeaseTool;
+import org.eclipse.kura.net.dhcp.DhcpLease;
 import org.eclipse.kura.net.dhcp.DhcpServerConfigIP4;
 import org.eclipse.kura.net.firewall.FirewallAutoNatConfig;
 import org.eclipse.kura.net.firewall.FirewallNatConfig;
@@ -1552,5 +1554,10 @@ public class NetworkAdminServiceImpl implements NetworkAdminService, EventHandle
                 groupCiphers.add(securityEntry);
             }
         }
+    }
+
+    @Override
+    public List<DhcpLease> getDhcpLeases() throws KuraException {
+        return DhcpLeaseTool.probeLeases(this.executorService);
     }
 }

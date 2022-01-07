@@ -80,4 +80,7 @@ public interface GwtNetworkService extends RemoteService {
 
     public List<GwtModemPdpEntry> findPdpContextInfo(GwtXSRFToken xsrfToken, String interfaceName)
             throws GwtKuraException;
+    
+    @Audit(componentName = "UI Network", description = "Get Dhcp List")
+    public List<String> getDhcpLeases(GwtXSRFToken xsrfToken) throws GwtKuraException;
 }

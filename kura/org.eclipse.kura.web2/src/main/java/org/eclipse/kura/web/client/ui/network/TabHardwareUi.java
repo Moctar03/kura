@@ -57,6 +57,30 @@ public class TabHardwareUi extends Composite implements NetworkTab {
     FormLabel labelUsb;
     @UiField
     FormLabel labelRssi;
+    @UiField
+    FormLabel labelSim;
+    @UiField
+    FormLabel labelModem;
+    @UiField
+    FormLabel labelGPS;
+    @UiField
+    FormLabel labelIMSI;
+    @UiField
+    FormLabel labelICCID;
+    @UiField
+    FormLabel labelRoaming;
+    @UiField
+    FormLabel labelPLMNID;
+    @UiField
+    FormLabel labelNetwork;
+    @UiField
+    FormLabel labelRadio;
+    @UiField
+    FormLabel labelBand;
+    @UiField
+    FormLabel labelLAC;
+    @UiField
+    FormLabel labelCI;
 
     @UiField
     FormControlStatic state;
@@ -80,6 +104,31 @@ public class TabHardwareUi extends Composite implements NetworkTab {
     FormControlStatic usb;
     @UiField
     FormControlStatic rssi;
+    @UiField
+    FormControlStatic sim;
+    @UiField
+    FormControlStatic modem;
+    @UiField
+    FormControlStatic gps;
+    @UiField
+    FormControlStatic imsi;
+    @UiField
+    FormControlStatic iccid;
+    @UiField
+    FormControlStatic roaming;
+    @UiField
+    FormControlStatic plmnid;
+    @UiField
+    FormControlStatic network;
+    @UiField
+    FormControlStatic radio;
+    @UiField
+    FormControlStatic band;
+    @UiField
+    FormControlStatic lac;
+    @UiField
+    FormControlStatic ci;
+    
 
     public TabHardwareUi(GwtSession currentSession) {
         initWidget(uiBinder.createAndBindUi(this));
@@ -98,6 +147,18 @@ public class TabHardwareUi extends Composite implements NetworkTab {
         this.labelMtu.setText(MSGS.netHwMTU());
         this.labelUsb.setText(MSGS.netHwUSBDevice());
         this.labelRssi.setText(MSGS.netHwSignalStrength());
+        this.labelSim.setText(MSGS.netHwSIM());
+        this.labelModem.setText(MSGS.netHwModem());
+        this.labelGPS.setText(MSGS.netHwGPS());
+        this.labelIMSI.setText(MSGS.netHwIMSI());
+        this.labelICCID.setText(MSGS.netHwICCID());
+        this.labelRoaming.setText(MSGS.netHwRoaming());
+        this.labelPLMNID.setText(MSGS.netHwPLMNID());
+        this.labelNetwork.setText(MSGS.netHwNetwork());
+        this.labelRadio.setText(MSGS.netHwRadio());
+        this.labelBand.setText(MSGS.netHwBand());
+        this.labelLAC.setText(MSGS.netHwLAC());
+        this.labelCI.setText(MSGS.netHwCI());
     }
 
     // Dirty flag not needed here since this tab is not modifiable
@@ -148,6 +209,18 @@ public class TabHardwareUi extends Composite implements NetworkTab {
         this.mtu.setText(String.valueOf(this.selectedNetIfConfig.getHwMTU()));
         this.usb.setText(this.selectedNetIfConfig.getHwUsbDevice());
         this.rssi.setText(this.selectedNetIfConfig.getHwRssi());
+        this.sim.setText(this.selectedNetIfConfig.getHwSIM());
+        this.modem.setText(this.selectedNetIfConfig.getHwModem());
+        this.gps.setText(this.selectedNetIfConfig.getHwGPS());
+        this.imsi.setText(this.selectedNetIfConfig.getHwIMSI());
+        this.iccid.setText(this.selectedNetIfConfig.getHwICCID());
+        this.roaming.setText(this.selectedNetIfConfig.getHwRoaming());
+        this.plmnid.setText(String.valueOf(this.selectedNetIfConfig.getHwPLMNID()));
+        this.network.setText(this.selectedNetIfConfig.getHwNetwork());
+        this.radio.setText(this.selectedNetIfConfig.getHwRadio());
+        this.band.setText(this.selectedNetIfConfig.getHwBand());
+        this.lac.setText(String.valueOf(this.selectedNetIfConfig.getHwLAC()));
+        this.ci.setText(String.valueOf(this.selectedNetIfConfig.getHwCI()));
     }
 
     private void reset() {
@@ -162,6 +235,18 @@ public class TabHardwareUi extends Composite implements NetworkTab {
         this.mtu.setText("");
         this.usb.setText("");
         this.rssi.setText("");
+        this.sim.setText("");
+        this.modem.setText("");
+        this.gps.setText("");
+        this.imsi.setText("");
+        this.iccid.setText("");
+        this.roaming.setText("");
+        this.plmnid.setText("");
+        this.network.setText("");
+        this.radio.setText("");
+        this.band.setText("");
+        this.lac.setText("");
+        this.ci.setText("");
     }
 
     @Override

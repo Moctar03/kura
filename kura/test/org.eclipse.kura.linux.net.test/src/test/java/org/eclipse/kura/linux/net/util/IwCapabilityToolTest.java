@@ -52,42 +52,6 @@ import org.eclipse.kura.KuraErrorCode;
 import org.eclipse.kura.KuraException;
 import org.junit.Test;
 
-class CommandExecutorServiceStub implements CommandExecutorService {
-    CommandStatus returnedStatus;
-
-    CommandExecutorServiceStub(CommandStatus returnedStatus) {
-         this.returnedStatus = returnedStatus;
-    }
-
-    public CommandStatus execute(Command command) {
-        return returnedStatus;
-    }
-    public void execute(Command command, Consumer<CommandStatus> callback) {
-    }
-    public boolean stop(Pid pid, Signal signal) {
-        return true;
-    }
-    public boolean kill(String[] commandLine, Signal signal) {
-        return true;
-    }
-    public boolean isRunning(Pid pid) {
-        return true;
-    }
-    public boolean isRunning(String[] commandLine) {
-        return true;
-    }
-    public Map<String, Pid> getPids(String[] commandLine) {
-        return null;
-    }
-    public void writeOutput(String commandOutput) {
-        OutputStream out= new ByteArrayOutputStream();
-        try (Writer w = new OutputStreamWriter(out, "UTF-8")) {
-            w.write(commandOutput);
-        } catch (Exception e) {
-        }
-        returnedStatus.setOutputStream(out);
-    }
-};
 
 public class IwCapabilityToolTest {
     protected static final CommandStatus successStatus = new CommandStatus(new Command(new String[] {}),
@@ -184,7 +148,7 @@ public class IwCapabilityToolTest {
                 + "                        * 5805 MHz [161] (20.0 dBm)\n"
                 + "                        * 5825 MHz [165] (20.0 dBm)\n";
     }
-
+    
     @Test
     public void parsePhy() throws KuraException, java.io.IOException {
         String commandOutput = getPhyInfo();
@@ -250,4 +214,5 @@ public class IwCapabilityToolTest {
         assertTrue(output.indexOf("countryCode: FR") >= 0);
         assertTrue(output.indexOf("channelFrequencies:") >= 0);
     }
+    
 }
