@@ -14,7 +14,6 @@ import org.eclipse.kura.executor.Pid;
 import org.eclipse.kura.executor.Signal;
 
 class CommandExecutorServiceStub implements CommandExecutorService {
-<<<<<<< HEAD
 
     CommandStatus returnedStatus;
 
@@ -58,36 +57,6 @@ class CommandExecutorServiceStub implements CommandExecutorService {
 
     public void writeOutput(String commandOutput) {
         OutputStream out = new ByteArrayOutputStream();
-=======
-    CommandStatus returnedStatus;
-
-    CommandExecutorServiceStub(CommandStatus returnedStatus) {
-         this.returnedStatus = returnedStatus;
-    }
-
-    public CommandStatus execute(Command command) {
-        return returnedStatus;
-    }
-    public void execute(Command command, Consumer<CommandStatus> callback) {
-    }
-    public boolean stop(Pid pid, Signal signal) {
-        return true;
-    }
-    public boolean kill(String[] commandLine, Signal signal) {
-        return true;
-    }
-    public boolean isRunning(Pid pid) {
-        return true;
-    }
-    public boolean isRunning(String[] commandLine) {
-        return true;
-    }
-    public Map<String, Pid> getPids(String[] commandLine) {
-        return null;
-    }
-    public void writeOutput(String commandOutput) {
-        OutputStream out= new ByteArrayOutputStream();
->>>>>>> 902fb2058 (Dhcp Lease List Added)
         try (Writer w = new OutputStreamWriter(out, "UTF-8")) {
             w.write(commandOutput);
         } catch (Exception e) {

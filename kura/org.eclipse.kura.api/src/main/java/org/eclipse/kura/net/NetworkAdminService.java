@@ -236,7 +236,6 @@ public interface NetworkAdminService {
      * @since 2.2
      */
     public String getWifiCountryCode() throws KuraException;
-<<<<<<< HEAD
 
     /**
      * Information on Dynamic Frequencies Selection
@@ -257,8 +256,6 @@ public interface NetworkAdminService {
      * @since 2.3
      */
     public boolean isWifiIEEE80211AC(String ifaceName) throws KuraException;
-=======
->>>>>>> 902fb2058 (Dhcp Lease List Added)
     
     /**
      * Obtains the DHCP Lease values 

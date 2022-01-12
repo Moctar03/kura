@@ -28,10 +28,6 @@ import org.eclipse.kura.net.wifi.WifiChannel;
 import org.eclipse.kura.net.wifi.WifiConfig;
 import org.junit.Test;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 902fb2058 (Dhcp Lease List Added)
 public class IwCapabilityToolTest {
 
     protected static final CommandStatus successStatus = new CommandStatus(new Command(new String[] {}),

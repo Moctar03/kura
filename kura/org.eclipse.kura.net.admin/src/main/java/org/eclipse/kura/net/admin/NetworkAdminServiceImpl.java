@@ -60,10 +60,6 @@ import org.eclipse.kura.net.admin.event.NetworkConfigurationChangeEvent;
 import org.eclipse.kura.net.admin.monitor.InterfaceStateBuilder;
 import org.eclipse.kura.net.admin.monitor.WifiInterfaceState;
 import org.eclipse.kura.net.admin.visitor.linux.WpaSupplicantConfigWriter;
-<<<<<<< HEAD
-=======
-import org.eclipse.kura.net.admin.visitor.linux.util.KuranetConfig;
->>>>>>> 902fb2058 (Dhcp Lease List Added)
 import org.eclipse.kura.linux.net.util.DhcpLeaseTool;
 import org.eclipse.kura.net.dhcp.DhcpLease;
 import org.eclipse.kura.net.dhcp.DhcpServerConfigIP4;
@@ -1567,7 +1563,6 @@ public class NetworkAdminServiceImpl implements NetworkAdminService, EventHandle
     }
 
     @Override
-<<<<<<< HEAD
     public boolean isWifiDFS(String ifaceName) throws KuraException {
         return IwCapabilityTool.probeCapabilities(ifaceName, executorService).contains(Capability.DFS);
     }
@@ -1577,8 +1572,6 @@ public class NetworkAdminServiceImpl implements NetworkAdminService, EventHandle
         return IwCapabilityTool.probeCapabilities(ifaceName, executorService).contains(Capability.VHT);
     }
 
-=======
->>>>>>> 902fb2058 (Dhcp Lease List Added)
     public List<DhcpLease> getDhcpLeases() throws KuraException {
         return DhcpLeaseTool.probeLeases(this.executorService);
     }
