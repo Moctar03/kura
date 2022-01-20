@@ -147,6 +147,22 @@ public interface CellularModem {
      * @return <code>UsbModemDevice</code>
      */
     public ModemDevice getModemDevice();
+    
+    public String[] getRegisteredNetwork() throws KuraException;
+    
+    public String[] getQueryNetworkInformation() throws KuraException;
+    
+    public String getLAC() throws KuraException;
+    
+    public String getCI() throws KuraException;
+    
+    public String getPLMNID() throws KuraException;
+    
+    public String getBand() throws KuraException;
+    
+    public String getNetworkName() throws KuraException;
+    
+    public String getRadio() throws KuraException;
 
     public String getDataPort() throws KuraException;
 

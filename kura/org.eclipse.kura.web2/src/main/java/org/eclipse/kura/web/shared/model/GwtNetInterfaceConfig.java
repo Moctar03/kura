@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 public class GwtNetInterfaceConfig extends KuraBaseModel implements Serializable {
 
     private static final String ROUTER_DNS_PASS = "routerDnsPass";
@@ -204,106 +205,6 @@ public class GwtNetInterfaceConfig extends KuraBaseModel implements Serializable
 
     public void setHwRssi(String rssi) {
         set("hwRssi", rssi);
-    }
-    
-    public String getHwSIM() {
-        return get("hwSIM");
-    }
-
-    public void setHwSIM(String sim) {
-        set("hwSIM", sim);
-    }
-    
-    public String getHwModem() {
-        return get("hwModem");
-    }
-
-    public void setHwModem(String modem) {
-        set("hwModem", modem);
-    }
-    
-    public String getHwGPS() {
-        return get("hwGPS");
-    }
-
-    public void setHwGPS(String gps) {
-        set("hwGPS", gps);
-    }
-    
-    public String getHwIMSI() {
-        return get("hwIMSI");
-    }
-
-    public void setHwIMSI(String imsi) {
-        set("hwIMSI", imsi);
-    }
-    
-    public String getHwICCID() {
-        if (get("hwICCID") != null) {
-            return get("hwICCID");
-        } else {
-            return null;
-        }
-    }
-
-    public void setHwICCID(String iccid) {
-        set("hwICCID", iccid);
-    }
-    
-    public String getHwRoaming() {
-        return get("hwRoaming");
-    }
-
-    public void setHwRoaming(String roaming) {
-        set("hwRoaming", roaming);
-    }
-    
-    public int getHwPLMNID() {
-        return get("hwPLMNID");
-    }
-
-    public void setPLMNID(int plmnid) {
-        set("hwPLMNID", plmnid);
-    }
-    
-    public String getHwNetwork() {
-        return get("hwNetwork");
-    }
-
-    public void setHwNetwork(String network) {
-        set("hwNetwork", network);
-    }
-    
-    public String getHwRadio() {
-        return get("hwRadio");
-    }
-
-    public void setHwRadio(String radio) {
-        set("hwRadio", radio);
-    }
-    
-    public String getHwBand() {
-        return get("hwBand");
-    }
-
-    public void setHwBand(String band) {
-        set("hwBand", band);
-    }
-    
-    public int getHwLAC() {
-        return get("hwLAC");
-    }
-
-    public void setHwLAC(int lac) {
-        set("hwLAC", lac);
-    }
-    
-    public int getHwCI() {
-        return get("hwCI");
-    }
-
-    public void setHwCI(int ci) {
-        set("hwCI", ci);
     }
 
     public GwtNetRouterMode getRouterModeEnum() {

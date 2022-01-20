@@ -267,5 +267,85 @@ public class GwtModemInterfaceConfig extends GwtNetInterfaceConfig {
     public void setDiversityEnabled(boolean diversityEnabled) {
         set(DIVERSITY_ENABLED_KEY, diversityEnabled);
     }
+    
+    public String getHwRegistration() {
+        return get("hwRegistration");
+    }
+
+    public void setHwRegistration(String registration) {
+        set("hwRegistration", registration);
+    }
+    
+    public String getHwIMSI() {
+    	if (get("hwIMSI") != null) {
+            return get("hwIMSI");
+        } else {
+            return "N/A";
+        }
+    }
+
+    public void setHwIMSI(String imsi) {
+        set("hwIMSI", imsi);
+    }
+    
+    public String getHwICCID() {
+        if (get("hwICCID") != null) {
+            return get("hwICCID");
+        } else {
+            return "N/A";
+        }
+    }
+
+    public void setHwICCID(String iccid) {
+        set("hwICCID", iccid);
+    }
+    
+    public String getHwPLMNID() {
+        return get("hwPLMNID");
+    }
+
+    public void setHwPLMNID(String plmnid) {
+        set("hwPLMNID", plmnid);
+    }
+    
+    public String getHwNetwork() {
+        return get("hwNetwork");
+    }
+
+    public void setHwNetwork(String network) {
+        set("hwNetwork", network);
+    }
+    
+    public String getHwRadio() {
+        return get("hwRadio");
+    }
+
+    public void setHwRadio(String radio) {
+        set("hwRadio", radio);
+    }
+    
+    public String getHwBand() {
+        return get("hwBand");
+    }
+
+    public void setHwBand(String band) {
+        set("hwBand", band);
+    }
+    
+    public String getHwLAC() {
+        return get("hwLAC");
+    }
+
+    public void setHwLAC(String lac) {
+        set("hwLAC", lac);
+    }
+    
+    public String getHwCI() {
+        return get("hwCI");
+    }
+
+    public void setHwCI(String ci) {
+        set("hwCI", ci);
+    }
 
 }

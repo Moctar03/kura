@@ -26,6 +26,9 @@ public enum HspaModemAtCommands {
     GET_SIGNAL_STRENGTH("at+csq\r\n"),
     GET_MOBILE_STATION_CLASS("at+cgclass?\r\n"),
     GET_REGISTRATION_STATUS("at+cgreg?\r\n"),
+    GET_REGISTERED_NETWORK("at+qspn\r\n"),
+    GET_QUERY_NETWORK_INFORMATION("at+qnwinfo\r\n"),
+    GET_LAC_CI("at+cgreg=2\r\n"),
     PDP_CONTEXT("at+cgdcont");
 
     private String command;

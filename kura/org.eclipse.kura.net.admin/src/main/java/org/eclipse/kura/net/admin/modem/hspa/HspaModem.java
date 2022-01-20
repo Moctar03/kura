@@ -61,6 +61,14 @@ public class HspaModem implements HspaCellularModem {
     protected Boolean modemLTE;
     protected String imsi;
     protected String iccid;
+    protected String plmnid;
+    protected String[] asQspn;
+    protected String[] asQnwinfo;
+    protected String networkName;
+    protected String band;
+    protected String radio;
+    protected String lac;
+    protected String ci;
 
     private ModemDevice device;
     private final String platform;
@@ -259,6 +267,174 @@ public class HspaModem implements HspaCellularModem {
         }
         this.rssi = signalStrength;
         return signalStrength;
+    }
+    
+    @Override
+    public String[] getRegisteredNetwork() throws KuraException {
+        synchronized (this.atLock) {
+            String atPort = getAtPort();
+
+            logger.debug("sendCommand getRegisteredNetwork :: {}", HspaModemAtCommands.GET_REGISTERED_NETWORK.getCommand());
+            byte[] reply;
+            CommConnection commAtConnection = openSerialPort(atPort);
+            if (!isAtReachable(commAtConnection)) {
+                closeSerialPort(commAtConnection);
+                throw new KuraException(KuraErrorCode.NOT_CONNECTED, MODEM_NOT_AVAILABLE_FOR_AT_CMDS_MSG);
+            }
+            try {
+                reply = commAtConnection.sendCommand(HspaModemAtCommands.GET_REGISTERED_NETWORK.getCommand().getBytes(),
+                        1000, 100);
+            } catch (IOException e) {
+                closeSerialPort(commAtConnection);
+                throw new KuraException(KuraErrorCode.CONNECTION_FAILED, e);
+            }
+            closeSerialPort(commAtConnection);
+            if (reply != null) {
+                String sQspn = this.getResponseString(reply);
+                if (sQspn.startsWith("+QSPN:")) {
+                    sQspn = sQspn.substring("+QSPN:".length()).trim();
+                    logger.info("getRegisteredNetwork() :: +QSPN={}", sQspn);
+                    asQspn = sQspn.split(",");
+                }
+            }
+        }
+        return this.asQspn;
+    }
+    @Override
+    public String getPLMNID() throws KuraException {
+        this.asQspn = getRegisteredNetwork();
+        this.plmnid = asQspn[4];
+        if (this.plmnid.length() == 7 || this.plmnid.length() == 8) {
+            this.plmnid = this.plmnid.substring(1, this.plmnid.length() - 1);
+            logger.trace("getPLMNID() :: PLMNID={}", this.plmnid);
+        }
+        return this.plmnid;
+    }
+    
+    public String getNetworkName() throws KuraException {
+        this.asQspn = getRegisteredNetwork();
+        this.networkName = asQspn[0].substring(1, asQspn[0].length() - 1);
+        logger.info("getNetworkName() :: Network={}", this.networkName);
+        return this.networkName;
+    }
+    
+    public String getRadio() throws KuraException {
+        this.asQnwinfo = getQueryNetworkInformation();
+        this.radio = asQnwinfo[0].substring(1, asQnwinfo[0].length() - 1);
+        logger.info("getRadio() :: Radio={}", this.radio);
+        return this.radio;
+    }
+    
+    public String getBand() throws KuraException {
+        this.asQnwinfo = getQueryNetworkInformation();
+        this.band = asQnwinfo[2].substring(1, asQnwinfo[2].length() - 1);
+        logger.trace("getBand() :: Band={}", this.band);
+        return this.band;
+    }
+    
+    public String[] getQueryNetworkInformation() throws KuraException {
+        synchronized (this.atLock) {
+            String atPort = getAtPort();
+
+            logger.debug("sendCommand getQueryNetworkInformation :: {}", HspaModemAtCommands.GET_QUERY_NETWORK_INFORMATION.getCommand());
+            byte[] reply;
+            CommConnection commAtConnection = openSerialPort(atPort);
+            if (!isAtReachable(commAtConnection)) {
+                closeSerialPort(commAtConnection);
+                throw new KuraException(KuraErrorCode.NOT_CONNECTED, MODEM_NOT_AVAILABLE_FOR_AT_CMDS_MSG);
+            }
+            try {
+                reply = commAtConnection.sendCommand(HspaModemAtCommands.GET_QUERY_NETWORK_INFORMATION.getCommand().getBytes(),
+                        1000, 100);
+            } catch (IOException e) {
+                closeSerialPort(commAtConnection);
+                throw new KuraException(KuraErrorCode.CONNECTION_FAILED, e);
+            }
+            closeSerialPort(commAtConnection);
+            if (reply != null) {
+                String sQnwinfo = this.getResponseString(reply);
+                if (sQnwinfo.startsWith("+QNWINFO:")) {
+                    sQnwinfo = sQnwinfo.substring("+QNWINFO:".length()).trim();
+                    logger.trace("getBand() :: +QNWINFO={}", sQnwinfo);
+                    asQnwinfo = sQnwinfo.split(",");
+                }
+            }
+        }
+        return this.asQnwinfo;
+    }
+    
+    public String getLAC() throws KuraException {
+        synchronized (this.atLock) {
+            String atPort = getAtPort();
+
+            logger.debug("sendCommand getLac :: {}", HspaModemAtCommands.GET_LAC_CI.getCommand());
+            byte[] reply;
+            CommConnection commAtConnection = openSerialPort(atPort);
+            if (!isAtReachable(commAtConnection)) {
+                closeSerialPort(commAtConnection);
+                throw new KuraException(KuraErrorCode.NOT_CONNECTED, MODEM_NOT_AVAILABLE_FOR_AT_CMDS_MSG);
+            }
+            try {
+                commAtConnection.sendCommand(HspaModemAtCommands.GET_LAC_CI.getCommand().getBytes(),
+                        1000, 100);
+                reply = commAtConnection.sendCommand(HspaModemAtCommands.GET_REGISTRATION_STATUS.getCommand().getBytes(),
+                        1000, 100);
+            } catch (IOException e) {
+                closeSerialPort(commAtConnection);
+                throw new KuraException(KuraErrorCode.CONNECTION_FAILED, e);
+            }
+            closeSerialPort(commAtConnection);
+            if (reply != null) {
+                String[] asCgreg;
+                String sCgreg = this.getResponseString(reply);
+                if (sCgreg.startsWith("+CGREG:")) {
+                    sCgreg = sCgreg.substring("+CGREG:".length()).trim();
+                    logger.trace("getLac() :: +CGREG={}", sCgreg);
+                    asCgreg = sCgreg.split(",");
+                    this.lac = asCgreg[2].substring(1, asCgreg[2].length() - 1);
+                    int decimal = Integer.parseInt(lac, 16);
+                    this.lac = String.valueOf(decimal);
+                }
+            }
+        }
+        return this.lac;
+    }
+    
+    public String getCI() throws KuraException {
+        synchronized (this.atLock) {
+            String atPort = getAtPort();
+
+            logger.debug("sendCommand getCi :: {}", HspaModemAtCommands.GET_LAC_CI.getCommand());
+            byte[] reply;
+            CommConnection commAtConnection = openSerialPort(atPort);
+            if (!isAtReachable(commAtConnection)) {
+                closeSerialPort(commAtConnection);
+                throw new KuraException(KuraErrorCode.NOT_CONNECTED, MODEM_NOT_AVAILABLE_FOR_AT_CMDS_MSG);
+            }
+            try {
+                commAtConnection.sendCommand(HspaModemAtCommands.GET_LAC_CI.getCommand().getBytes(),
+                        1000, 100);
+                reply = commAtConnection.sendCommand(HspaModemAtCommands.GET_REGISTRATION_STATUS.getCommand().getBytes(),
+                        1000, 100);
+            } catch (IOException e) {
+                closeSerialPort(commAtConnection);
+                throw new KuraException(KuraErrorCode.CONNECTION_FAILED, e);
+            }
+            closeSerialPort(commAtConnection);
+            if (reply != null) {
+                String[] asCgreg;
+                String sCgreg = this.getResponseString(reply);
+                if (sCgreg.startsWith("+CGREG:")) {
+                    sCgreg = sCgreg.substring("+CGREG:".length()).trim();
+                    logger.trace("getLac() :: +CGREG={}", sCgreg);
+                    asCgreg = sCgreg.split(",");
+                    this.ci = asCgreg[3].substring(1, asCgreg[3].length() - 1);
+                    int decimal = Integer.parseInt(ci, 16);
+                    this.ci = String.valueOf(decimal);
+                }
+            }
+        }
+        return this.ci;
     }
 
     @Override
@@ -604,7 +780,7 @@ public class HspaModem implements HspaCellularModem {
                 closeSerialPort(commAtConnection);
                 throw new KuraException(KuraErrorCode.CONNECTION_FAILED, e);
             }
-            closeSerialPort(commAtConnection);
+            closeSerialPort(commAtConnection); 
             if (reply != null) {
                 String sRegStatus = getResponseString(reply);
                 String[] regStatusSplit = sRegStatus.split(",");
