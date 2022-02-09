@@ -9,6 +9,7 @@
  * 
  * Contributors:
  *  Eurotech
+ *  Sterwen-Technology
  ******************************************************************************/
 package org.eclipse.kura.net.modem;
 
@@ -147,10 +148,6 @@ public interface CellularModem {
      * @return <code>UsbModemDevice</code>
      */
     public ModemDevice getModemDevice();
-    
-    public String[] getRegisteredNetwork() throws KuraException;
-    
-    public String[] getQueryNetworkInformation() throws KuraException;
     
     public String getLAC() throws KuraException;
     

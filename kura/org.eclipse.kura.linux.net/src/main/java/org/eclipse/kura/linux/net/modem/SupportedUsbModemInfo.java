@@ -10,7 +10,7 @@
  * Contributors:
  *  Eurotech
  *  3 PORT d.o.o.
- *  Sterwen Technologies
+ *  Sterwen Technology
  *******************************************************************************/
 package org.eclipse.kura.linux.net.modem;
 
@@ -53,6 +53,9 @@ public enum SupportedUsbModemInfo {
     Zte_ME3630("ME3630", "19d2", "1476", 3, 0, 1, 2, 1, 5000, 10000, Arrays.asList(ModemTechnologyType.LTE,
             ModemTechnologyType.GSM_GPRS,
             ModemTechnologyType.UMTS), Arrays.asList(new OptionModemDriver("19d2", "1476")), ""),
+    Zte_K3765("K3765", "19d2", "2002", 3, 0, 1, 2, 1, 5000, 10000, Arrays.asList(ModemTechnologyType.LTE,
+            ModemTechnologyType.GSM_GPRS,
+            ModemTechnologyType.UMTS), Arrays.asList(new OptionModemDriver("19d2", "2002")), ""),
     SimTech_SIM7000("SIM7000", "1e0e", "9001", 5, 0, 3, 2, 3, 5000, 10000, Arrays.asList(ModemTechnologyType.LTE,
             ModemTechnologyType.GSM_GPRS), Arrays.asList(new OptionModemDriver("1e0e", "9001")), ""),
     QUECTEL_EX25("EX25", "2c7c", "0125", 4, 0, 2, 3, 1, 5000, 10000, Arrays.asList(ModemTechnologyType.LTE,

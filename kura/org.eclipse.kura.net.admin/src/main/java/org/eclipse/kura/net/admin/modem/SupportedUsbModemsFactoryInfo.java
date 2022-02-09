@@ -61,6 +61,7 @@ public class SupportedUsbModemsFactoryInfo {
         Ublox_SARA_U2(SupportedUsbModemInfo.Ublox_SARA_U2, UbloxModemFactory.class, UbloxModemConfigGenerator.class),
         UBLOX_LARA_R2(SupportedUsbModemInfo.UBLOX_LARA_R2, UbloxModemFactory.class, UbloxModemConfigGenerator.class),
         Zte_ME3630(SupportedUsbModemInfo.Zte_ME3630, ZteMe3630ModemFactory.class, ZteMe3630ConfigGenerator.class),
+        Zte_K3765(SupportedUsbModemInfo.Zte_K3765, ZteMe3630ModemFactory.class, ZteMe3630ConfigGenerator.class),
         SimTech_SIM7000(SupportedUsbModemInfo.SimTech_SIM7000, SimTechSim7000ModemFactory.class, SimTechSim7000ConfigGenerator.class),
         QUECTEL_EX25(SupportedUsbModemInfo.QUECTEL_EX25, QuectelEX25ModemFactory.class, QuectelGenericConfigGenerator.class),
         QUECTEL_BG96(SupportedUsbModemInfo.QUECTEL_BG96, QuectelBG96ModemFactory.class, QuectelGenericConfigGenerator.class),

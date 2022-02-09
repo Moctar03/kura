@@ -9,6 +9,7 @@
  * 
  * Contributors:
  *  Eurotech
+ *  Sterwen-Technology
  *******************************************************************************/
 package org.eclipse.kura.web.shared.model;
 
@@ -269,7 +270,11 @@ public class GwtModemInterfaceConfig extends GwtNetInterfaceConfig {
     }
     
     public String getHwRegistration() {
-        return get("hwRegistration");
+        if (get("hwRegistration") != null) {
+            return get("hwRegistration");
+        } else {
+            return "N/A";
+        }
     }
 
     public void setHwRegistration(String registration) {
@@ -277,7 +282,7 @@ public class GwtModemInterfaceConfig extends GwtNetInterfaceConfig {
     }
     
     public String getHwIMSI() {
-    	if (get("hwIMSI") != null) {
+        if (get("hwIMSI") != null) {
             return get("hwIMSI");
         } else {
             return "N/A";
@@ -301,7 +306,11 @@ public class GwtModemInterfaceConfig extends GwtNetInterfaceConfig {
     }
     
     public String getHwPLMNID() {
-        return get("hwPLMNID");
+        if (get("hwPLMNID") != null) {
+            return get("hwPLMNID");
+        } else {
+            return "N/A";
+        }
     }
 
     public void setHwPLMNID(String plmnid) {
@@ -309,7 +318,11 @@ public class GwtModemInterfaceConfig extends GwtNetInterfaceConfig {
     }
     
     public String getHwNetwork() {
-        return get("hwNetwork");
+        if (get("hwNetwork") != null) {
+            return get("hwNetwork");
+        } else {
+            return "N/A";
+        }
     }
 
     public void setHwNetwork(String network) {
@@ -317,7 +330,11 @@ public class GwtModemInterfaceConfig extends GwtNetInterfaceConfig {
     }
     
     public String getHwRadio() {
-        return get("hwRadio");
+        if (get("hwRadio") != null) {
+            return get("hwRadio");
+        } else {
+            return "N/A";
+        }
     }
 
     public void setHwRadio(String radio) {
@@ -325,7 +342,11 @@ public class GwtModemInterfaceConfig extends GwtNetInterfaceConfig {
     }
     
     public String getHwBand() {
-        return get("hwBand");
+        if (get("hwBand") != null) {
+            return get("hwBand");
+        } else {
+            return "N/A";
+        }
     }
 
     public void setHwBand(String band) {
@@ -333,7 +354,11 @@ public class GwtModemInterfaceConfig extends GwtNetInterfaceConfig {
     }
     
     public String getHwLAC() {
-        return get("hwLAC");
+    	if (get("hwLAC") != null) {
+            return get("hwLAC");
+        } else {
+            return "N/A";
+        }
     }
 
     public void setHwLAC(String lac) {
@@ -341,7 +366,11 @@ public class GwtModemInterfaceConfig extends GwtNetInterfaceConfig {
     }
     
     public String getHwCI() {
-        return get("hwCI");
+    	if (get("hwCI") != null) {
+            return get("hwCI");
+        } else {
+            return "N/A";
+        }
     }
 
     public void setHwCI(String ci) {
